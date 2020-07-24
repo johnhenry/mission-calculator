@@ -6,8 +6,8 @@ const handleButton = function (element, event) {
   const initialValue = element.getAttribute('value') ?? '';
   element.setAttribute('value', initialValue + event.target.dataset.value);
 }
-const MyCalculator = class extends HTMLElement {
-  constructor(){
+const CalculatorKit = class extends HTMLElement {
+  constructor() {
     super();
     // create shadow
     this.shadow = this.attachShadow({ mode: 'open' });
@@ -28,7 +28,7 @@ const MyCalculator = class extends HTMLElement {
       .appendChild(document.createElement('slot'))
       .addEventListener('slotchange', this.slotChange);
   }
-  slotChange (event) {
+  slotChange(event) {
     const assignButton = (child) => {
       if(child.nodeName === "BUTTON") {
         child.onclick = 
@@ -54,36 +54,30 @@ const MyCalculator = class extends HTMLElement {
       this.onclick = null;
     }
   }
-  disconnectedCallback() {
-
-  }
+  disconnectedCallback() {}
   static get observedAttributes() {
     return ['value', 'empty', 'stored', 'opp'];
   }
   attributeChangedCallback(name, old, detail) {
-    if(name === 'empty' && old !== detail && !detail !== null){
+    if(name === 'empty' && old !== detail && detail !== null){
       return this.dispatchEvent(new Event('onempty'));
     }
     if(old !== detail) {
       switch(name){
         case 'value':
-          this.input.value = detail;
-          this.dispatchEvent(new CustomEvent('onvaluechanged', { detail } ));
-          return;
+          this.input.value = detail ?? '';
+          return this.dispatchEvent(new CustomEvent('onvaluechanged', { detail }));
         case 'stored':
-          this.dispatchEvent(new CustomEvent('onstored', { detail } ));
-          return;
+          return this.dispatchEvent(new CustomEvent('onstored', { detail }));
         case 'opp':
-          this.dispatchEvent(new CustomEvent('onoppchanged', { detail } ));
-          return;         
+          return this.dispatchEvent(new CustomEvent('onoppchanged', { detail }));
       }
     }
   }
   reset() {
     this.removeAttribute('opp');
     this.removeAttribute('stored');
-    this.setAttribute('empty', '');
     this.removeAttribute('value');
   }
 }
-customElements.define('my-calculator', MyCalculator);
+export default CalculatorKit;

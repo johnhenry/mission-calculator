@@ -9,7 +9,8 @@
 </head>
 <body>
   <script type='module'>
-    import './index.mjs';
+    import CalculatorKit from './index.mjs';
+    customElements.define('calculator-kit', CalculatorKit);
   </script>
   <script>
     const binOps = {
@@ -22,37 +23,37 @@
       element.setAttribute('empty', '');
       const opp = binOps[element.getAttribute('opp')];
       if(!opp){
-        element.setAttribute('stored', element.getAttribute('value'))
+        element.setAttribute('stored', element.getAttribute('value'));
         return;
       }
       const stored = Number(element.getAttribute('stored'));
       const value = Number(element.getAttribute('value'));
-      const calculated = opp(stored, value);
-      element.setAttribute('stored', String(calculated));
-      element.setAttribute('value', String(calculated));
-      element.dispatchEvent(new CustomEvent('oncalculated', { detail:calculated }));
-    }
+      const detail = String(opp(stored, value));
+      element.setAttribute('stored', detail);
+      element.setAttribute('value', detail);
+      element.dispatchEvent(new CustomEvent('oncalculated', { detail }));
+    };
     const binaryOperation = function(element, event) {
-      calculate(element, event);
+      calculate(element);
       element.setAttribute('opp', event.target.dataset.value);
     };
     const clearVal = function(element) {
       element.reset();
-    }
+    };
     const decimal = function(element) {
-      if(element.getAttribute('empty') !== null){
+      if(element.getAttribute('empty') !== null) {
         element.removeAttribute('empty');
         element.setAttribute('value', '0.');
         return;
       }
-      const test = element.getAttribute('value') + '.';
-      if (Number.isNaN(Number(test))) {
+      const candidate = element.getAttribute('value') + '.';
+      if (Number.isNaN(Number(candidate))) {
         return;
       }
-      element.setAttribute('value', test);
-    }
+      element.setAttribute('value', candidate);
+    };
   </script>
-  <my-calculator id="my-calculator">
+  <calculator-kit id="calc">
     <span class="button-grid">
       <button class="button-clear" onClick="clearVal(this)">c</button>
       <button class="button-zero button-default" data-value="0" >0</button>
@@ -72,10 +73,10 @@
       <button class="button-divide button-operation" onClick="binaryOperation(this, event)" data-value="÷">÷</button>
       <button class="button-equal button-operation" onClick="calculate(this)" >=</button>
     </span>
-  </my-calculator>
+  </calculator-kit>
   <script>
-    const calculator = document.getElementById('my-calculator');
-    calculator.addEventListener('oncalculated', (event)=>console.dir(event.detail));
+    const calculator = document.getElementById('calc');
+    calculator.addEventListener('oncalculated', ({ detail }) => console.dir(detail));
   </script>
 </body>
 </html>

@@ -1,4 +1,117 @@
-:root::before {
-  content: "💡I'm here to ensure that CSS is loaded properly. Feel free to delete me the code that causes this to appear. ";
+* { 
+  box-sizing: border-box;
 }
-/* Put code in me. 😋 */
+html {
+  height: 100vh;
+}
+body {
+  margin:0;
+  padding:0;
+  background-color: #20132D;
+  height: 100%;
+}
+#my-calculator {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  color: #E7DD59;
+  align-items: center;
+  align-content: center;
+  padding:16px;
+}
+#my-calculator::part(input) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 36px;
+  width: 100%;
+  height: 100%;
+  text-align: right;
+}
+
+#my-calculator::part(button-box) {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#my-calculator .button-grid {
+  width: 256px;
+  height: 256px;
+  display: grid;
+  grid-gap: 8px;
+  grid-template-areas: 
+  "sev eig nin add"
+  "fou fiv six sub"
+  "one two thr mul"
+  "zer zer dec div"
+  "cle cle equ equ";
+}
+#my-calculator .button-grid button{
+  border: none;
+  color: #E7DD59;
+}
+
+#my-calculator .button-default {
+  background-color: #0ABED0;
+}
+#my-calculator .button-operation {
+  background-color: #AD2B65;
+}
+#my-calculator .button-clear {
+  background-color: #41364B;
+}
+#my-calculator .button-zero {
+  grid-area: zer;
+}
+#my-calculator .button-one {
+  grid-area: one;
+}
+#my-calculator .button-two {
+  grid-area: two;
+}
+#my-calculator .button-three {
+  grid-area: thr;
+}
+#my-calculator .button-four {
+  grid-area: fou;
+}
+#my-calculator .button-five {
+  grid-area: fiv;
+}
+#my-calculator .button-six {
+  grid-area: six;
+}
+#my-calculator .button-seven {
+  grid-area: sev;
+}
+#my-calculator .button-eight {
+  grid-area: eig;
+}
+#my-calculator .button-nine {
+  grid-area: nin;
+}
+
+#my-calculator .button-clear {
+  grid-area: cle;
+}
+#my-calculator .button-equal {
+  grid-area: equ;
+}
+#my-calculator .button-decimal {
+  grid-area: dec;
+}
+
+#my-calculator .button-add {
+  grid-area: add;
+}
+#my-calculator .button-subtrack {
+  grid-area: sub;
+}
+#my-calculator .button-multiple {
+  grid-area: mul;
+}
+#my-calculator .button-divide {
+  grid-area: div;
+}

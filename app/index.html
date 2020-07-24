@@ -3,14 +3,79 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Calculator</title>
   <link rel="shortcut icon" href="./favicon.ico">
   <link rel="stylesheet" href="./index.css">
 </head>
 <body>
-  <!-- Put code in me. 😋 -->
   <script type='module'>
     import './index.mjs';
+  </script>
+  <script>
+    const binOps = {
+      "+" : (a, b) => Number(a) + Number(b),
+      "-" : (a, b) => a-b,
+      "*" : (a, b) => a*b,
+      "÷" : (a, b) => a/b,
+    };
+    const calculate = function(element) {
+      element.setAttribute('empty', '');
+      const opp = binOps[element.getAttribute('opp')];
+      if(!opp){
+        element.setAttribute('stored', element.getAttribute('value'))
+        return;
+      }
+      const stored = Number(element.getAttribute('stored'));
+      const value = Number(element.getAttribute('value'));
+      const calculated = opp(stored, value);
+      element.setAttribute('stored', String(calculated));
+      element.setAttribute('value', String(calculated));
+      element.dispatchEvent(new CustomEvent('oncalculated', { detail:calculated }));
+    }
+    const binaryOperation = function(element, event) {
+      calculate(element, event);
+      element.setAttribute('opp', event.target.dataset.value);
+    };
+    const clearVal = function(element) {
+      element.reset();
+    }
+    const decimal = function(element) {
+      if(element.getAttribute('empty') !== null){
+        element.removeAttribute('empty');
+        element.setAttribute('value', '0.');
+        return;
+      }
+      const test = element.getAttribute('value') + '.';
+      if (Number.isNaN(Number(test))) {
+        return;
+      }
+      element.setAttribute('value', test);
+    }
+  </script>
+  <my-calculator id="my-calculator">
+    <span class="button-grid">
+      <button class="button-clear" onClick="clearVal(this)">c</button>
+      <button class="button-zero button-default" data-value="0" >0</button>
+      <button class="button-one button-default" data-value="1" >1</button>
+      <button class="button-two button-default" data-value="2" >2</button>
+      <button class="button-three button-default" data-value="3" >3</button>
+      <button class="button-four button-default" data-value="4" >4</button>
+      <button class="button-five button-default" data-value="5" >5</button>
+      <button class="button-six button-default" data-value="6" >6</button>
+      <button class="button-seven button-default" data-value="7" >7</button>
+      <button class="button-eight button-default" data-value="8" >8</button>
+      <button class="button-nine button-default" data-value="9" >9</button>
+      <button class="button-decimal button-default" onClick= "decimal(this)" >.</button>
+      <button class="button-add button-operation" onClick="binaryOperation(this, event)" data-value="+">+</button>
+      <button class="button-subtract button-operation" onClick="binaryOperation(this, event)" data-value="-">-</button>
+      <button class="button-multiply button-operation" onClick="binaryOperation(this, event)" data-value="*">*</button>
+      <button class="button-divide button-operation" onClick="binaryOperation(this, event)" data-value="÷">÷</button>
+      <button class="button-equal button-operation" onClick="calculate(this)" >=</button>
+    </span>
+  </my-calculator>
+  <script>
+    const calculator = document.getElementById('my-calculator');
+    calculator.addEventListener('oncalculated', (event)=>console.dir(event.detail));
   </script>
 </body>
 </html>

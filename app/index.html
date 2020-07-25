@@ -26,41 +26,41 @@
       "÷" : (a, b) => BigInt(a) / BigInt(b),
     };
     const calculate = function(element) {
-      element.setAttribute('empty', '');
-      const opp = binOpsInt[element.getAttribute('opp')];
+      element.empty = true;
+      const opp = binOps[element.getAttribute('opp')];
       if(!opp){
-        element.setAttribute('stored', element.getAttribute('value'));
+        element.setAttribute('stored', element.value);
         return;
       }
       const detail = String(opp(
-        element.getAttribute('stored'), 
-        element.getAttribute('value')
+        element.stored, 
+        element.value,
       ));
-      element.setAttribute('stored', detail);
-      element.setAttribute('value', detail);
+      element.stored = detail;
+      element.value = detail;
       element.dispatchEvent(new CustomEvent('oncalculated', { detail }));
     };
-    const binaryOperation = function(element, event) {
+    const binaryOperation = function(element, {target:{dataset:{value}}}) {
       calculate(element);
-      element.setAttribute('opp', event.target.dataset.value);
+      element.opp = value;
     };
     const clearVal = function(element) {
       element.reset();
     };
     const decimal = function(element) {
-      if(element.getAttribute('empty') !== null) {
-        element.removeAttribute('empty');
-        element.setAttribute('value', '0.');
+      if(element.empty || !element.value) {
+        element.empty = false;
+        element.value = '0.';
         return;
       }
-      const candidate = element.getAttribute('value') + '.';
+      const candidate = element.value + '.';
       if (Number.isNaN(Number(candidate))) {
         return;
       }
-      element.setAttribute('value', candidate);
+      element.value = candidate;
     };
-    const replace = function(element, event) {
-      element.setAttribute('value', event.target.dataset.value);
+    const replace = function(element, {target:{dataset:{value}}}) {
+      element.value = value;
     };
   </script>
   <calculator-kit id="calc">
@@ -88,7 +88,12 @@
   </calculator-kit>
   <script>
     const calculator = document.getElementById('calc');
-    calculator.addEventListener('oncalculated', ({ detail }) => console.dir(detail));
+    const handleEvent = ({ type, detail }) => console.log(type, detail);
+    calculator.addEventListener('oncalculated', handleEvent);
+    calculator.addEventListener('onempty', handleEvent);
+    calculator.addEventListener('onstored', handleEvent);
+    calculator.addEventListener('onoppchanged', handleEvent);
+    calculator.addEventListener('onvaluechanged', handleEvent);
   </script>
 </body>
 </html>

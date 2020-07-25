@@ -1,11 +1,29 @@
 const handleButton = function (element, event) {
-  if(element.getAttribute('empty') !== null){
-    element.setAttribute('value', '');
-    element.removeAttribute('empty');
+  if(element.empty){
+    element.value = '';
+    element.empty = false;
   }
-  element.setAttribute('value',
-    `${element.getAttribute('value') ?? ''}${event.target.dataset.value}`);
-}
+  element.value = (element.value ?? '') + event.target.dataset.value;
+};
+
+const assignButton = function (child, handleButton) {
+  if(child instanceof HTMLButtonElement) {
+    // Update onclick handler to work with this component
+    child.onclick = 
+      child.onclick
+        ? child.onclick.bind(this) 
+        : this.defaultClick
+          ? this.defaultClick.bind(this)
+          : handleButton.bind(this, this); 
+  }
+  if(child.childNodes.length){
+    // Resursively apply to children
+    for (const grandChild of child.childNodes){
+      assignButton.call(this, grandChild, handleButton);
+    }
+  }
+};
+
 const CalculatorKit = class extends HTMLElement {
   constructor() {
     super();
@@ -29,23 +47,8 @@ const CalculatorKit = class extends HTMLElement {
       .addEventListener('slotchange', this.slotChange);
   }
   slotChange(event) {
-    const assignButton = (child) => {
-      if(child.nodeName === "BUTTON") {
-        child.onclick = 
-          child.onclick
-            ? child.onclick.bind(this) 
-            : this.defaultClick
-              ? this.defaultClick.bind(this)
-              : handleButton.bind(this, this); 
-      }
-      if(child.childNodes.length){
-        for (const grandChild of child.childNodes){
-          assignButton(grandChild);
-        }
-      }
-    }
     for(const child of event.target.assignedElements()) {
-      assignButton(child);
+      assignButton.call(this, child, handleButton);
     }
   }
   connectedCallback() {
@@ -79,5 +82,33 @@ const CalculatorKit = class extends HTMLElement {
     this.removeAttribute('stored');
     this.removeAttribute('value');
   }
-}
+  set stored (detail) {
+    this.setAttribute('stored', detail);
+  }
+  get stored () {
+    return this.getAttribute('stored');
+  }
+  set value (detail) {
+    this.setAttribute('value', detail);
+  }
+  get value () {
+    return this.getAttribute('value');
+  }
+  set opp (detail) {
+    this.setAttribute('opp', detail);
+  }
+  get opp () {
+    return this.getAttribute('opp');
+  }
+  get empty () {
+    return this.getAttribute('empty') !== null;
+  }
+  set empty(bool){
+    if(bool){
+      this.setAttribute('empty', '');
+    } else {
+      this.removeAttribute('empty');
+    }
+  }
+};
 export default CalculatorKit;

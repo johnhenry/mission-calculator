@@ -19,12 +19,12 @@
       "*" : (a, b) => Number(a) * Number(b),
       "÷" : (a, b) => Number(a) / Number(b),
     };
-    const binOpsInt = {
-      "+" : (a, b) => BigInt(a) + BigInt(b),
-      "-" : (a, b) => BigInt(a) - BigInt(b),
-      "*" : (a, b) => BigInt(a) * BigInt(b),
-      "÷" : (a, b) => BigInt(a) / BigInt(b),
-    };
+    // const binOpsInt = {
+    //   "+" : (a, b) => BigInt(a) + BigInt(b),
+    //   "-" : (a, b) => BigInt(a) - BigInt(b),
+    //   "*" : (a, b) => BigInt(a) * BigInt(b),
+    //   "÷" : (a, b) => BigInt(a) / BigInt(b),
+    // };
     const calculate = function(element) {
       element.empty = true;
       const opp = binOps[element.getAttribute('opp')];
@@ -40,7 +40,7 @@
       element.value = detail;
       element.dispatchEvent(new CustomEvent('oncalculated', { detail }));
     };
-    const binaryOperation = function(element, {target:{dataset:{value}}}) {
+    const binaryOperation = function(element, { target : { dataset : { value } } }) {
       calculate(element);
       element.opp = value;
     };
@@ -59,7 +59,7 @@
       }
       element.value = candidate;
     };
-    const replace = function(element, {target:{dataset:{value}}}) {
+    const replace = function(element, { target : { dataset : { value } } }) {
       element.value = value;
     };
   </script>
@@ -76,22 +76,22 @@
       <button class="button-seven" data-value="7" >7</button>
       <button class="button-eight" data-value="8" >8</button>
       <button class="button-nine" data-value="9" >9</button>
-      <!-- <button class="button-const-pi" onClick="replace(this, event)" data-value="3.14159" >pi</button> -->
-      <!-- <button class="button-const-e" onClick="replace(this, event)" data-value="2.71828" >e</button> -->
       <button class="button-decimal" onClick= "decimal(this)" >.</button>
       <button class="button-operation button-add" onClick="binaryOperation(this, event)" data-value="+">+</button>
       <button class="button-operation button-subtract" onClick="binaryOperation(this, event)" data-value="-">-</button>
       <button class="button-operation button-multiply" onClick="binaryOperation(this, event)" data-value="*">*</button>
       <button class="button-operation button-divide" onClick="binaryOperation(this, event)" data-value="÷">÷</button>
       <button class="button-operation button-equal" onClick="calculate(this)" >=</button>
+      <!-- <button class="button-const-pi" onClick="replace(this, event)" data-value="3.14159" >pi</button> -->
+      <!-- <button class="button-const-e" onClick="replace(this, event)" data-value="2.71828" >e</button> -->
     </span>
   </calculator-kit>
   <script>
     const calculator = document.getElementById('calc');
     const handleEvent = ({ type, detail }) => console.log(type, detail);
     calculator.addEventListener('oncalculated', handleEvent);
-    calculator.addEventListener('onempty', handleEvent);
-    calculator.addEventListener('onstored', handleEvent);
+    calculator.addEventListener('onemptychanged', handleEvent);
+    calculator.addEventListener('onstoredcnanged', handleEvent);
     calculator.addEventListener('onoppchanged', handleEvent);
     calculator.addEventListener('onvaluechanged', handleEvent);
   </script>

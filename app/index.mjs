@@ -1,9 +1,9 @@
-const handleButton = function (element, event) {
-  if(element.empty){
+const handleButton = function (element, { target : { dataset : { value } } }) {
+  if(element.empty) {
     element.value = '';
     element.empty = false;
   }
-  element.value = (element.value ?? '') + event.target.dataset.value;
+  element.value = (element.value ?? '') + value;
 };
 
 const assignButton = function (child, handleButton) {
@@ -16,7 +16,7 @@ const assignButton = function (child, handleButton) {
           ? this.defaultClick.bind(this)
           : handleButton.bind(this, this); 
   }
-  if(child.childNodes.length){
+  if(child.childNodes.length) {
     // Resursively apply to children
     for (const grandChild of child.childNodes){
       assignButton.call(this, grandChild, handleButton);
@@ -56,45 +56,34 @@ const CalculatorKit = class extends HTMLElement {
       this.defaultClick = this.onclick;
       this.onclick = null;
     }
-  }
-  disconnectedCallback() {}
-  static get observedAttributes() {
-    return ['value', 'empty', 'stored', 'opp'];
-  }
-  attributeChangedCallback(name, old, detail) {
-    if(name === 'empty' && old !== detail && detail !== null){
-      return this.dispatchEvent(new Event('onempty'));
-    }
-    if(old !== detail) {
-      switch(name){
-        case 'value':
-          this.input.value = detail ?? '';
-          return this.dispatchEvent(new CustomEvent('onvaluechanged', { detail }));
-        case 'stored':
-          return this.dispatchEvent(new CustomEvent('onstored', { detail }));
-        case 'opp':
-          return this.dispatchEvent(new CustomEvent('onoppchanged', { detail }));
-      }
+    const startingValue = this.getAttribute('value');
+    if(startingValue !== null){
+      this.value = startingValue;
     }
   }
   reset() {
+    this.value = "";
+    this.empty = false;
     this.removeAttribute('opp');
     this.removeAttribute('stored');
-    this.removeAttribute('value');
   }
   set stored (detail) {
+    this.dispatchEvent(new CustomEvent('onstoredchanged', { detail }));
     this.setAttribute('stored', detail);
   }
   get stored () {
     return this.getAttribute('stored');
   }
   set value (detail) {
+    this.input.value = detail;
+    this.dispatchEvent(new CustomEvent('onvaluechanged', { detail }))
     this.setAttribute('value', detail);
   }
   get value () {
     return this.getAttribute('value');
   }
   set opp (detail) {
+    this.dispatchEvent(new CustomEvent('onoppchanged', { detail }));
     this.setAttribute('opp', detail);
   }
   get opp () {
@@ -103,7 +92,8 @@ const CalculatorKit = class extends HTMLElement {
   get empty () {
     return this.getAttribute('empty') !== null;
   }
-  set empty(bool){
+  set empty(bool) {
+    this.dispatchEvent(new CustomEvent('onemptychanged', { detail: !!bool}))
     if(bool){
       this.setAttribute('empty', '');
     } else {

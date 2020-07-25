@@ -44,9 +44,6 @@
       calculate(element);
       element.opp = value;
     };
-    const clearVal = function(element) {
-      element.reset();
-    };
     const decimal = function(element) {
       if(element.empty || !element.value) {
         element.empty = false;
@@ -58,6 +55,9 @@
         return;
       }
       element.value = candidate;
+    };
+    const clearVal = function(element) {
+      element.reset();
     };
     const replace = function(element, { target : { dataset : { value } } }) {
       element.value = value;

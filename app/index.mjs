@@ -1,3 +1,24 @@
+const htmlToElements = (html) => {
+  const template = document.createElement('template');
+  template.innerHTML = html;
+  return template.content.childNodes;
+};
+
+const attachDOM = function(object, ...objects){
+  object.append(...objects);
+  return object;
+};
+
+const domString = 
+`<style>
+* {
+  box-sizing: border-box;
+}
+</style>
+<input id='input' part='input' readonly>
+<span part='button-box' />
+<slot id='slot'/>`;
+
 const handleButton = function (element, { target : { dataset : { value } } }) {
   if(element.empty) {
     element.value = '';
@@ -25,33 +46,25 @@ const assignButton = function (child, handleButton) {
 };
 
 const CalculatorKit = class extends HTMLElement {
-  constructor() {
+  constructor () {
     super();
-    // create shadow
-    this.shadow = this.attachShadow({ mode: 'open' });
-    // create style
-    const style = document.createElement('style');
-    style.innerHTML = '* { box-sizing: border-box; }';
-    this.shadow.appendChild(style);
-    // create input
-    this.input = this.shadow.appendChild(document.createElement('input'));
-    this.input.part = 'input';
-    this.input.readOnly = true;
-    // create button box
-    this.buttonBox = this.shadow.appendChild(document.createElement('span'));
-    this.buttonBox.part = 'button-box';
-    // add slot to button box
-    this.slotChange = this.slotChange.bind(this);
-    this.buttonBox
-      .appendChild(document.createElement('slot'))
-      .addEventListener('slotchange', this.slotChange);
+    // create shadow dom
+    this.shadow = attachDOM(
+      this.attachShadow({ mode: 'open' }),
+      ...htmlToElements(domString),
+    )
+    // attach slot listeners
+    this.shadow.getElementById('slot')
+      .addEventListener(
+        'slotchange',
+        this.slotChange.bind(this));
   }
-  slotChange(event) {
-    for(const child of event.target.assignedElements()) {
+  slotChange ({ target } ) {
+    for(const child of target.assignedElements()) {
       assignButton.call(this, child, handleButton);
     }
   }
-  connectedCallback() {
+  connectedCallback () {
     if(this.onclick) {
       this.defaultClick = this.onclick;
       this.onclick = null;
@@ -61,30 +74,30 @@ const CalculatorKit = class extends HTMLElement {
       this.value = startingValue;
     }
   }
-  reset() {
+  reset () {
     this.value = "";
     this.empty = false;
     this.removeAttribute('opp');
     this.removeAttribute('stored');
   }
   set stored (detail) {
-    this.dispatchEvent(new CustomEvent('onstoredchanged', { detail }));
     this.setAttribute('stored', detail);
+    this.dispatchEvent(new CustomEvent('onstoredchanged', { detail }));
   }
   get stored () {
     return this.getAttribute('stored');
   }
   set value (detail) {
-    this.input.value = detail;
-    this.dispatchEvent(new CustomEvent('onvaluechanged', { detail }))
+    this.shadow.getElementById('input').value = detail;
     this.setAttribute('value', detail);
+    this.dispatchEvent(new CustomEvent('onvaluechanged', { detail }))
   }
   get value () {
     return this.getAttribute('value');
   }
   set opp (detail) {
-    this.dispatchEvent(new CustomEvent('onoppchanged', { detail }));
     this.setAttribute('opp', detail);
+    this.dispatchEvent(new CustomEvent('onoppchanged', { detail }));
   }
   get opp () {
     return this.getAttribute('opp');
@@ -93,12 +106,12 @@ const CalculatorKit = class extends HTMLElement {
     return this.getAttribute('empty') !== null;
   }
   set empty(bool) {
-    this.dispatchEvent(new CustomEvent('onemptychanged', { detail: !!bool}))
     if(bool){
       this.setAttribute('empty', '');
     } else {
       this.removeAttribute('empty');
     }
+    this.dispatchEvent(new CustomEvent('onemptychanged', { detail: !!bool}))
   }
 };
 export default CalculatorKit;

@@ -3,8 +3,8 @@ const handleButton = function (element, event) {
     element.setAttribute('value', '');
     element.removeAttribute('empty');
   }
-  const initialValue = element.getAttribute('value') ?? '';
-  element.setAttribute('value', initialValue + event.target.dataset.value);
+  element.setAttribute('value',
+    `${element.getAttribute('value') ?? ''}${event.target.dataset.value}`);
 }
 const CalculatorKit = class extends HTMLElement {
   constructor() {

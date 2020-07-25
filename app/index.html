@@ -15,20 +15,27 @@
   <script>
     const binOps = {
       "+" : (a, b) => Number(a) + Number(b),
-      "-" : (a, b) => a-b,
-      "*" : (a, b) => a*b,
-      "÷" : (a, b) => a/b,
+      "-" : (a, b) => Number(a) - Number(b),
+      "*" : (a, b) => Number(a) * Number(b),
+      "÷" : (a, b) => Number(a) / Number(b),
+    };
+    const binOpsInt = {
+      "+" : (a, b) => BigInt(a) + BigInt(b),
+      "-" : (a, b) => BigInt(a) - BigInt(b),
+      "*" : (a, b) => BigInt(a) * BigInt(b),
+      "÷" : (a, b) => BigInt(a) / BigInt(b),
     };
     const calculate = function(element) {
       element.setAttribute('empty', '');
-      const opp = binOps[element.getAttribute('opp')];
+      const opp = binOpsInt[element.getAttribute('opp')];
       if(!opp){
         element.setAttribute('stored', element.getAttribute('value'));
         return;
       }
-      const stored = Number(element.getAttribute('stored'));
-      const value = Number(element.getAttribute('value'));
-      const detail = String(opp(stored, value));
+      const detail = String(opp(
+        element.getAttribute('stored'), 
+        element.getAttribute('value')
+      ));
       element.setAttribute('stored', detail);
       element.setAttribute('value', detail);
       element.dispatchEvent(new CustomEvent('oncalculated', { detail }));
@@ -52,26 +59,31 @@
       }
       element.setAttribute('value', candidate);
     };
+    const replace = function(element, event) {
+      element.setAttribute('value', event.target.dataset.value);
+    };
   </script>
   <calculator-kit id="calc">
     <span class="button-grid">
       <button class="button-clear" onClick="clearVal(this)">c</button>
-      <button class="button-zero button-default" data-value="0" >0</button>
-      <button class="button-one button-default" data-value="1" >1</button>
-      <button class="button-two button-default" data-value="2" >2</button>
-      <button class="button-three button-default" data-value="3" >3</button>
-      <button class="button-four button-default" data-value="4" >4</button>
-      <button class="button-five button-default" data-value="5" >5</button>
-      <button class="button-six button-default" data-value="6" >6</button>
-      <button class="button-seven button-default" data-value="7" >7</button>
-      <button class="button-eight button-default" data-value="8" >8</button>
-      <button class="button-nine button-default" data-value="9" >9</button>
-      <button class="button-decimal button-default" onClick= "decimal(this)" >.</button>
-      <button class="button-add button-operation" onClick="binaryOperation(this, event)" data-value="+">+</button>
-      <button class="button-subtract button-operation" onClick="binaryOperation(this, event)" data-value="-">-</button>
-      <button class="button-multiply button-operation" onClick="binaryOperation(this, event)" data-value="*">*</button>
-      <button class="button-divide button-operation" onClick="binaryOperation(this, event)" data-value="÷">÷</button>
-      <button class="button-equal button-operation" onClick="calculate(this)" >=</button>
+      <button class="button-zero " data-value="0" >0</button>
+      <button class="button-one" data-value="1" >1</button>
+      <button class="button-two" data-value="2" >2</button>
+      <button class="button-three" data-value="3" >3</button>
+      <button class="button-four" data-value="4" >4</button>
+      <button class="button-five" data-value="5" >5</button>
+      <button class="button-six" data-value="6" >6</button>
+      <button class="button-seven" data-value="7" >7</button>
+      <button class="button-eight" data-value="8" >8</button>
+      <button class="button-nine" data-value="9" >9</button>
+      <!-- <button class="button-const-pi" onClick="replace(this, event)" data-value="3.14159" >pi</button> -->
+      <!-- <button class="button-const-e" onClick="replace(this, event)" data-value="2.71828" >e</button> -->
+      <button class="button-decimal" onClick= "decimal(this)" >.</button>
+      <button class="button-operation button-add" onClick="binaryOperation(this, event)" data-value="+">+</button>
+      <button class="button-operation button-subtract" onClick="binaryOperation(this, event)" data-value="-">-</button>
+      <button class="button-operation button-multiply" onClick="binaryOperation(this, event)" data-value="*">*</button>
+      <button class="button-operation button-divide" onClick="binaryOperation(this, event)" data-value="÷">÷</button>
+      <button class="button-operation button-equal" onClick="calculate(this)" >=</button>
     </span>
   </calculator-kit>
   <script>

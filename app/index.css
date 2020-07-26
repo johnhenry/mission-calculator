@@ -27,7 +27,7 @@ body {
   height: 100%;
   text-align: right;
 }
-#calc::part(button-box) {
+#calc::part(buttons) {
   flex: 1 1 auto;
   display: flex;
   place-items: center;

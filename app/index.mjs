@@ -15,8 +15,8 @@ const domString =
   box-sizing: border-box;
 }
 </style>
-<input id='input' part='input' readonly>
-<span part='button-box' />
+<input id='input' part='input' placeholder='0' readonly>
+<span part='buttons' />
 <slot id='slot'/>`;
 
 const handleButton = function (element, { target : { dataset : { value } } }) {
@@ -27,7 +27,7 @@ const handleButton = function (element, { target : { dataset : { value } } }) {
   element.value = (element.value ?? '') + value;
 };
 
-const assignButton = function (child, handleButton) {
+const assignButton = function (child, defaultClickHandler) {
   if(child instanceof HTMLButtonElement) {
     // Update onclick handler to work with this component
     child.onclick = 
@@ -35,7 +35,7 @@ const assignButton = function (child, handleButton) {
         ? child.onclick.bind(this) 
         : this.defaultClick
           ? this.defaultClick.bind(this)
-          : handleButton.bind(this, this); 
+          : defaultClickHandler.bind(this, this); 
   }
   if(child.childNodes.length) {
     // Resursively apply to children
@@ -102,16 +102,17 @@ const CalculatorKit = class extends HTMLElement {
   get opp () {
     return this.getAttribute('opp');
   }
-  get empty () {
-    return this.getAttribute('empty') !== null;
-  }
   set empty(bool) {
-    if(bool){
+    const detail = !!bool;
+    if(detail){
       this.setAttribute('empty', '');
     } else {
       this.removeAttribute('empty');
     }
-    this.dispatchEvent(new CustomEvent('onemptychanged', { detail: !!bool}))
+    this.dispatchEvent(new CustomEvent('onemptychanged', { detail }))
+  }
+  get empty () {
+    return this.getAttribute('empty') !== null;
   }
 };
 export default CalculatorKit;

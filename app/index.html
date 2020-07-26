@@ -3,14 +3,100 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Calculator</title>
   <link rel="shortcut icon" href="./favicon.ico">
   <link rel="stylesheet" href="./index.css">
+  <script type='module'>
+    import CalculatorKit from './index.mjs';
+    customElements.define('calculator-kit', CalculatorKit);
+  </script>
+  <script>
+    const binOps = {
+      "+" : (a, b) => Number(a) + Number(b),
+      "-" : (a, b) => Number(a) - Number(b),
+      "*" : (a, b) => Number(a) * Number(b),
+      "÷" : (a, b) => Number(a) / Number(b),
+    };
+    // const binOpsInt = {
+    //   "+" : (a, b) => BigInt(a) + BigInt(b),
+    //   "-" : (a, b) => BigInt(a) - BigInt(b),
+    //   "*" : (a, b) => BigInt(a) * BigInt(b),
+    //   "÷" : (a, b) => BigInt(a) / BigInt(b),
+    // };
+    const calculate = function(element) {
+      element.empty = true;
+      const opp = binOps[element.getAttribute('opp')];
+      if(!opp){
+        element.setAttribute('stored', element.value);
+        return;
+      }
+      const detail = String(opp(
+        element.stored, 
+        element.value,
+      ));
+      element.opp = "";
+      element.stored = detail;
+      element.value = detail;
+      element.dispatchEvent(new CustomEvent('oncalculated', { detail }));
+    };
+    const binaryOperation = function(element, { target : { dataset : { value } } }) {
+      calculate(element);
+      element.opp = value;
+    };
+    const decimal = function(element) {
+      if(element.empty || !element.value) {
+        element.empty = false;
+        element.value = '0.';
+        return;
+      }
+      const candidate = element.value + '.';
+      if (Number.isNaN(Number(candidate))) {
+        return;
+      }
+      element.value = candidate;
+    };
+    const clearVal = function(element) {
+      element.reset();
+    };
+    const replace = function(element, { target : { dataset : { value } } }) {
+      element.value = value;
+    };
+  </script>
 </head>
 <body>
-  <!-- Put code in me. 😋 -->
-  <script type='module'>
-    import './index.mjs';
+  <calculator-kit id="calc">
+    <span class="button-grid">
+      <button class="button-clear" onClick="clearVal(this)">c</button>
+      <button class="button-zero " data-value="0" >0</button>
+      <button class="button-one" data-value="1" >1</button>
+      <button class="button-two" data-value="2" >2</button>
+      <button class="button-three" data-value="3" >3</button>
+      <button class="button-four" data-value="4" >4</button>
+      <button class="button-five" data-value="5" >5</button>
+      <button class="button-six" data-value="6" >6</button>
+      <button class="button-seven" data-value="7" >7</button>
+      <button class="button-eight" data-value="8" >8</button>
+      <button class="button-nine" data-value="9" >9</button>
+      <button class="button-decimal" onClick= "decimal(this)" >.</button>
+      <button class="button-operation button-add" onClick="binaryOperation(this, event)" data-value="+">+</button>
+      <button class="button-operation button-subtract" onClick="binaryOperation(this, event)" data-value="-">-</button>
+      <button class="button-operation button-multiply" onClick="binaryOperation(this, event)" data-value="*">*</button>
+      <button class="button-operation button-divide" onClick="binaryOperation(this, event)" data-value="÷">÷</button>
+      <button class="button-operation button-equal" onClick="calculate(this)" >=</button>
+      <!-- <button class="button-const-pi" onClick="replace(this, event)" data-value="3.14159" >π</button>
+      <button class="button-const-e" onClick="replace(this, event)" data-value="2.71828" ><i>e</i></button>
+      <button class="button-const-tau" onClick="replace(this, event)" data-value="6.28319" >τ</button>
+      <button class="button-const-phi" onClick="replace(this, event)" data-value="1.61803" >Φ</button> -->
+    </span>
+  </calculator-kit>
+  <script>
+    const calculator = document.getElementById('calc');
+    const handleEvent = ({ type, detail }) => console.log(type, detail);
+    calculator.addEventListener('oncalculated', handleEvent);
+    calculator.addEventListener('onemptychanged', handleEvent);
+    calculator.addEventListener('onstoredcnanged', handleEvent);
+    calculator.addEventListener('onoppchanged', handleEvent);
+    calculator.addEventListener('onvaluechanged', handleEvent);
   </script>
 </body>
 </html>

@@ -1,4 +1,113 @@
-:root::before {
-  content: "💡I'm here to ensure that CSS is loaded properly. Feel free to delete me the code that causes this to appear. ";
+* { 
+  box-sizing: border-box;
 }
-/* Put code in me. 😋 */
+html {
+  height: 100vh;
+}
+body {
+  margin:0;
+  padding:0;
+  background-color: #20132D;
+  height: 100%;
+}
+
+#calc {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  padding:16px;
+}
+#calc::part(input) {
+  display: flex;
+  place-items: center;
+  flex: 0 0 36px;
+  width: 100%;
+  height: 100%;
+  text-align: right;
+}
+#calc::part(buttons) {
+  flex: 1 1 auto;
+  display: flex;
+  place-items: center;
+}
+#calc .button-grid {
+  width: 256px;
+  height: 256px;
+  display: grid;
+  grid-gap: 8px;
+  grid-template-areas: 
+  "sev eig nin add"
+  "fou fiv six sub"
+  "one two thr mul"
+  "zer zer dec div"
+  "cle cle equ equ";
+}
+#calc .button-grid button{
+  border: none;
+  color: #E7DD59;
+}
+
+#calc button {
+  background-color: #0ABED0;
+}
+#calc .button-operation {
+  background-color: #AD2B65;
+}
+#calc .button-clear {
+  background-color: #41364B;
+}
+#calc .button-zero {
+  grid-area: zer;
+}
+#calc .button-one {
+  grid-area: one;
+}
+#calc .button-two {
+  grid-area: two;
+}
+#calc .button-three {
+  grid-area: thr;
+}
+#calc .button-four {
+  grid-area: fou;
+}
+#calc .button-five {
+  grid-area: fiv;
+}
+#calc .button-six {
+  grid-area: six;
+}
+#calc .button-seven {
+  grid-area: sev;
+}
+#calc .button-eight {
+  grid-area: eig;
+}
+#calc .button-nine {
+  grid-area: nin;
+}
+
+#calc .button-clear {
+  grid-area: cle;
+}
+#calc .button-equal {
+  grid-area: equ;
+}
+#calc .button-decimal {
+  grid-area: dec;
+}
+
+#calc .button-add {
+  grid-area: add;
+}
+#calc .button-subtrack {
+  grid-area: sub;
+}
+#calc .button-multiple {
+  grid-area: mul;
+}
+#calc .button-divide {
+  grid-area: div;
+}
